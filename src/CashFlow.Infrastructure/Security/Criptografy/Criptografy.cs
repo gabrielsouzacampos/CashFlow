@@ -1,6 +1,6 @@
 ﻿using CashFlow.Domain.Security.Criptografy;
 
-namespace CashFlow.Infrastructure.Security;
+namespace CashFlow.Infrastructure.Security.Criptografy;
 
 public class Criptografy : IPasswordEncripter
 {
