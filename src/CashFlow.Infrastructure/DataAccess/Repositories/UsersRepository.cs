@@ -13,4 +13,11 @@ internal class UsersRepository(CashFlowDbContext context) : IUsersRepository
 
     public async Task Add(User user) 
         => await _context.Users.AddAsync(user);
+
+    public async Task<User?> GetUserByEmail(string email)
+    {
+        var user = await _context.Users.AsNoTracking()
+            .FirstOrDefaultAsync(user => user.Email.Equals(email)); 
+        return user;
+    }
 }
