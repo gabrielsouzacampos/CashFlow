@@ -15,6 +15,10 @@ public class AutoMapping : Profile
 
     private void RequestToEntity()
     {
+        CreateMap<RequestRegisterUserJson, User>()
+            .ForMember(dest => dest.Password,
+                config => config.Ignore()
+            );
         CreateMap<RequestExpenseJson, Expense>()
             .ForMember(dest => dest.Date,
                 config => config.MapFrom(source => DateTime.SpecifyKind(source.Date, DateTimeKind.Utc))
