@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
+using CashFlow.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,7 +61,8 @@ app.UseAuthentication();
 
 app.MapControllers();
 
-await MigrateDatabase();
+if (!builder.Configuration.IsTestEnvironment()) 
+    await MigrateDatabase();
 
 app.Run();
 
@@ -69,3 +71,5 @@ async Task MigrateDatabase()
     await using var scope = app.Services.CreateAsyncScope();
     await DatabaseMigration.MigrationDatabase(scope.ServiceProvider);
 }
+
+public partial class Program { }
