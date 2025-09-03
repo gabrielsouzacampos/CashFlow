@@ -32,7 +32,7 @@ builder.Services.AddAuthentication(config =>
         ClockSkew = new TimeSpan(0),
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                builder.Configuration.GetValue<string>("Settings:Jwt:SingingKey")!
+                builder.Configuration.GetValue<string>("Settings:Jwt:SigningKey")!
             )
         ),
     };
@@ -56,8 +56,8 @@ app.UseMiddleware<CultureMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
