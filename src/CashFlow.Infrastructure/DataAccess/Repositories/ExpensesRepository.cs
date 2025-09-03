@@ -9,9 +9,10 @@ internal class ExpensesRepository(CashFlowDbContext context) : IExpensesReposito
 
     private readonly CashFlowDbContext _context = context;
 
-    public async Task<List<Expense>> GetAll()
+    public async Task<List<Expense>> GetAll(User user)
     {
-        return await _context.Expenses.AsNoTracking().ToListAsync();
+        return await _context.Expenses.AsNoTracking()
+            .Where(expense => expense.UserId.Equals(user.Id)).ToListAsync();
     }
 
     public async Task Add(Expense expense)
@@ -19,29 +20,24 @@ internal class ExpensesRepository(CashFlowDbContext context) : IExpensesReposito
         await _context.Expenses.AddAsync(expense);
     }
 
-    public async Task<Expense?> GetById(long id)
+    public async Task<Expense?> GetById(long id, User user)
     {
         return await _context.Expenses.AsNoTracking()
-            .FirstOrDefaultAsync(expense => expense.Id.Equals(id));
+            .FirstOrDefaultAsync(expense => expense.Id.Equals(id) && expense.UserId.Equals(user.Id));
     }
 
-    public async Task<Expense?> GetExpenseById(long id)
+    public async Task<Expense?> GetExpenseById(long id, User user)
     {
         return await _context.Expenses
-            .FirstOrDefaultAsync(expense => expense.Id.Equals(id));
+            .FirstOrDefaultAsync(expense => expense.Id.Equals(id) && expense.UserId.Equals(user.Id));
     }
 
-    public async Task<bool> DeleteById(long id)
+    public async Task DeleteById(long id)
     {
         var result = await _context.Expenses
-            .FirstOrDefaultAsync(expense => expense.Id.Equals(id));
-
-        if (result is null)
-            return false;
+            .FirstAsync(expense => expense.Id.Equals(id));
 
         _context.Expenses.Remove(result);
-
-        return true;
     }
 
     public void Update(Expense expense)
@@ -49,7 +45,7 @@ internal class ExpensesRepository(CashFlowDbContext context) : IExpensesReposito
         _context.Expenses.Update(expense);
     }
 
-    public async Task<List<Expense>> FilterByMonth(DateOnly date)
+    public async Task<List<Expense>> FilterByMonth(DateOnly date, User user)
     {
         var startDate = new DateTime(year: date.Year, month: date.Month, day: 1).Date.ToUniversalTime();
         var endDate = new DateTime(
@@ -65,7 +61,7 @@ internal class ExpensesRepository(CashFlowDbContext context) : IExpensesReposito
         return await _context
             .Expenses
             .AsNoTracking()
-            .Where(expense => expense.Date >= startDate && expense.Date <= endDate)
+            .Where(expense => expense.Date >= startDate && expense.Date <= endDate && expense.UserId.Equals(user.Id))
             .OrderBy(expense => expense.Date)
             .ThenBy(expense => expense.Title)
             .ToListAsync();

@@ -5,20 +5,15 @@ public interface IExpensesRepository
 {
     Task Add(Expense expense);
     
-    Task<List<Expense>> GetAll();
+    Task<List<Expense>> GetAll(User user);
     
-    Task<Expense?> GetById(long id);
+    Task<Expense?> GetById(long id, User user);
 
-    Task<Expense?> GetExpenseById(long id);
+    Task<Expense?> GetExpenseById(long id, User user);
 
-    Task<List<Expense>> FilterByMonth(DateOnly date);
+    Task<List<Expense>> FilterByMonth(DateOnly date, User user);
 
     void Update(Expense expense);
     
-    /// <summary>
-    /// This function returns TRUE if the deletion was successful otherwise returns FALSE.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    Task<bool> DeleteById(long id);
+    Task DeleteById(long id);
 }

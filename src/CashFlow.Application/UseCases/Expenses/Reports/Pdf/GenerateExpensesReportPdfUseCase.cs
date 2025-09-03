@@ -3,6 +3,7 @@ using CashFlow.Application.UseCases.Expenses.Reports.Pdf.Fonts;
 using CashFlow.Domain.Extensions;
 using CashFlow.Domain.Reports;
 using CashFlow.Domain.Repositories.Expenses;
+using CashFlow.Domain.Services.LoggedUser;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
@@ -13,24 +14,27 @@ namespace CashFlow.Application.UseCases.Expenses.Reports.Pdf;
 public class GenerateExpensesReportPdfUseCase : IGenerateExpensesReportPdfUseCase
 {
     private readonly IExpensesRepository _expensesRepository;
+    private readonly ILoggedUser _loggedUser;
 
-    public GenerateExpensesReportPdfUseCase(IExpensesRepository expensesRepository)
+    public GenerateExpensesReportPdfUseCase(IExpensesRepository expensesRepository, ILoggedUser loggedUser)
     {
         _expensesRepository = expensesRepository;
         GlobalFontSettings.FontResolver = new ExpensesReportFontResolver();
+        _loggedUser = loggedUser;
     }
 
     public async Task<byte[]> Execute(DateOnly month)
     {
-        var expenses = await _expensesRepository.FilterByMonth(month);
+        var loggedUser = await _loggedUser.Get();
+        var expenses = await _expensesRepository.FilterByMonth(month, loggedUser);
 
         if (expenses.Count.Equals(0)) return [];
 
-        var document = CreateDocument(month);
+        var document = CreateDocument(month, loggedUser.Name);
 
         var page = CreatePage(document);
 
-        CreateHeader(page);
+        CreateHeader(page, loggedUser.Name);
 
         var totalExpenses = expenses.Sum(expenses => expenses.Amount);
 
@@ -88,14 +92,14 @@ public class GenerateExpensesReportPdfUseCase : IGenerateExpensesReportPdfUseCas
         return RenderDocument(document);
     }
 
-    private static Document CreateDocument(DateOnly month)
+    private static Document CreateDocument(DateOnly month, string author)
     {
         var document = new Document
         {
             Info = new DocumentInfo
             {
                 Title = $"{ResourceReportGenerationMessages.EXPENSES_FOR} {month:Y}",
-                Author = "Gabriel Souza Campos"
+                Author = author
             }
         };
 
@@ -118,10 +122,10 @@ public class GenerateExpensesReportPdfUseCase : IGenerateExpensesReportPdfUseCas
         return section;
     }
 
-    private static void CreateHeader(Section page)
+    private static void CreateHeader(Section page, string name)
     {
         var header = page.AddParagraph();
-        header.AddFormattedText("Hey, Gabriel Souza Campos",
+        header.AddFormattedText($"Hey, { name }",
             new Font { Name = FontHelper.RALEWAY_BLACK, Size = 16 });
     }
 

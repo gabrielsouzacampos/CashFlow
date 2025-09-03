@@ -1,24 +1,27 @@
-﻿using CashFlow.Domain.Enums;
-using CashFlow.Domain.Extensions;
+﻿using CashFlow.Domain.Extensions;
 using CashFlow.Domain.Reports;
 using CashFlow.Domain.Repositories.Expenses;
+using CashFlow.Domain.Services.LoggedUser;
 using ClosedXML.Excel;
 
 namespace CashFlow.Application.UseCases.Expenses.Reports.Excel;
 
-public class GenerateExpensesReportExcelUseCase(IExpensesRepository expensesRepository) : IGenerateExpensesReportExcelUseCase
+public class GenerateExpensesReportExcelUseCase(IExpensesRepository expensesRepository, ILoggedUser loggedUser) : IGenerateExpensesReportExcelUseCase
 {
     private readonly IExpensesRepository _expensesRepository = expensesRepository;
+    private readonly ILoggedUser _loggedUser = loggedUser;
 
     public async Task<byte[]> Execute(DateOnly month)
     {
-        var expenses = await _expensesRepository.FilterByMonth(month);
+        var loggedUser = await _loggedUser.Get();
+
+        var expenses = await _expensesRepository.FilterByMonth(month, loggedUser);
 
         if (expenses.Count.Equals(0)) return [];
 
         using var workbook = new XLWorkbook
         {
-            Author = "Gabriel Souza Campos",
+            Author = loggedUser.Name,
         };
 
         var worksheet = workbook.Worksheets.Add($"{month:Y}");
