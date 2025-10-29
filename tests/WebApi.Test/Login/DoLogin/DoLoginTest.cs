@@ -1,6 +1,7 @@
 ﻿using CashFlow.Communication.Requests;
 using CashFlow.Exception;
 using CommomTestUtilities.Requests;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
 using System.Globalization;
 using System.Net;
@@ -11,13 +12,19 @@ using WebApi.Test.InlineData;
 
 namespace WebApi.Test.Login.DoLogin;
 
-public class DoLoginTest(CustomWebApplicationFactory webApplicationFactory) : IClassFixture<CustomWebApplicationFactory>
+public class DoLoginTest : CashFlowClassFixture
 {
     private const string _method = "api/Login";
-    private readonly HttpClient _httpClient = webApplicationFactory.CreateClient();
-    private readonly string _email = webApplicationFactory.GetEmail();
-    private readonly string _name = webApplicationFactory.GetName();
-    private readonly string _password = webApplicationFactory.GetPassword();
+    private readonly string _email = string.Empty;
+    private readonly string _name = string.Empty;
+    private readonly string _password = string.Empty;
+
+    public DoLoginTest(CustomWebApplicationFactory webApplicationFactory) : base(webApplicationFactory)
+    {
+        _email = webApplicationFactory.GetEmail();
+        _name = webApplicationFactory.GetName();
+        _password = webApplicationFactory.GetPassword();
+    }
 
     [Fact]
     public async Task Success()
@@ -28,13 +35,13 @@ public class DoLoginTest(CustomWebApplicationFactory webApplicationFactory) : IC
             Password = _password
         };
 
-        var response = await _httpClient.PostAsJsonAsync(_method, request);
-        var responseBody = await response.Content.ReadAsStreamAsync();
-        var responseData = await JsonDocument.ParseAsync(responseBody);
+        var result = await DoPost(_method, request);
+        var body = await result.Content.ReadAsStreamAsync();
+        var response = await JsonDocument.ParseAsync(body);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        responseData.RootElement.GetProperty("name").GetString().ShouldBe(_name);
-        responseData.RootElement.GetProperty("token").GetString().ShouldNotBeNullOrEmpty();
+        result.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.RootElement.GetProperty("name").GetString().ShouldBe(_name);
+        response.RootElement.GetProperty("token").GetString().ShouldNotBeNullOrEmpty();
     }
 
     [Theory]
@@ -42,15 +49,14 @@ public class DoLoginTest(CustomWebApplicationFactory webApplicationFactory) : IC
     public async Task Error_Login_Is_Invalid(string cultureInfo)
     {
         var request = RequestLoginJsonBuilder.Build();
-        _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(cultureInfo));
 
-        var response = await _httpClient.PostAsJsonAsync(_method, request);
-        var responseBody = await response.Content.ReadAsStreamAsync();
-        var responseData = await JsonDocument.ParseAsync(responseBody);
-        var errors = responseData.RootElement.GetProperty("errors").EnumerateArray();
+        var result = await DoPost(_method, request, culture: cultureInfo);
+        var body = await result.Content.ReadAsStreamAsync();
+        var response = await JsonDocument.ParseAsync(body);
+        var errors = response.RootElement.GetProperty("errors").EnumerateArray();
         var expectedMessage = ResourceErrorMessages.ResourceManager.GetString("EMAIL_OR_PASSWORD_INVALID", new CultureInfo(cultureInfo));
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        result.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         errors.ShouldSatisfyAllConditions(
             () => errors.ShouldHaveSingleItem(),
             () => errors.ShouldContain(error => error.GetString()!.Equals(expectedMessage))

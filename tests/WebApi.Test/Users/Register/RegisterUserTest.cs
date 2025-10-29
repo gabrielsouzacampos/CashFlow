@@ -10,17 +10,16 @@ using WebApi.Test.InlineData;
 
 namespace WebApi.Test.Users.Register;
 
-public class RegisterUserTest(CustomWebApplicationFactory webApplicationFactory) : IClassFixture<CustomWebApplicationFactory>
+public class RegisterUserTest(CustomWebApplicationFactory webApplicationFactory) : CashFlowClassFixture(webApplicationFactory)
 {
     private const string _method = "api/User";
-    private readonly HttpClient _httpClient = webApplicationFactory.CreateClient();
 
     [Fact]
     public async Task Success()
     {
         var request = RequestRegisterUserJsonBuilder.Build();
 
-        var result = await _httpClient.PostAsJsonAsync(_method, request);
+        var result = await DoPost(_method, request);
         var body = await result.Content.ReadAsStreamAsync();
         var response = JsonDocument.Parse(body);
 
@@ -35,9 +34,8 @@ public class RegisterUserTest(CustomWebApplicationFactory webApplicationFactory)
     {
         var request = RequestRegisterUserJsonBuilder.Build();
         request.Name = string.Empty;
-        _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(cultureInfo));
 
-        var result = await _httpClient.PostAsJsonAsync(_method, request);
+        var result = await DoPost(_method, request, culture: cultureInfo);
         var body = await result.Content.ReadAsStreamAsync();
         var response = JsonDocument.Parse(body);
         var errors = response.RootElement.GetProperty("errors").EnumerateArray();
