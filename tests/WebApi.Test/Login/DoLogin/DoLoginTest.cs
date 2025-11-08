@@ -1,12 +1,9 @@
 ﻿using CashFlow.Communication.Requests;
 using CashFlow.Exception;
 using CommomTestUtilities.Requests;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
 using System.Globalization;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
 using WebApi.Test.InlineData;
 
