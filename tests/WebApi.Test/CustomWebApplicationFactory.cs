@@ -14,9 +14,11 @@ namespace WebApi.Test;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
-    private User _user;
-    private string _password;
-    private string _token;
+    private User _user = new();
+    private Expense _expense = new();
+
+    private string _token = string.Empty;
+    private string _password = string.Empty;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -49,6 +51,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     public string GetToken() => _token;
 
+    public long GetExpenseId() => _expense.Id;
+
     private void StartDatabase(CashFlowDbContext dbContext, IPasswordEncripter passwordEncripter)
     {
         AddUsers(dbContext, passwordEncripter);
@@ -67,8 +71,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     private void AddExpenses(CashFlowDbContext dbContext, User user)
     {
-        var expense = ExpenseBuilder.Build(user);
+        _expense = ExpenseBuilder.Build(user);
 
-        dbContext.Expenses.Add(expense);
+        dbContext.Expenses.Add(_expense);
     }
 }
