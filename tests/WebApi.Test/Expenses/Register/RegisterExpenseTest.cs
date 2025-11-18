@@ -14,7 +14,7 @@ public class RegisterExpenseTest : CashFlowClassFixture
     private readonly string _token = string.Empty;
 
     public RegisterExpenseTest(CustomWebApplicationFactory webApplicationFactory) 
-        : base(webApplicationFactory) => _token = webApplicationFactory.GetToken();
+        : base(webApplicationFactory) => _token = webApplicationFactory.User_Team_Member.GetToken();
 
     [Fact]
     public async Task Success()
