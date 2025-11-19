@@ -19,7 +19,7 @@ public class RegisterExpenseTest : CashFlowClassFixture
     [Fact]
     public async Task Success()
     {
-        var request = RequestRegisterExpenseJsonBuilder.Build();
+        var request = RequestExpenseJsonBuilder.Build();
         var result = await DoPost(_method, request, _token);
         var body = await result.Content.ReadAsStreamAsync();
         var response = await JsonDocument.ParseAsync(body);
@@ -32,7 +32,7 @@ public class RegisterExpenseTest : CashFlowClassFixture
     [ClassData(typeof(CultureInlineDataTest))]
     public async Task Error_Title_Empty(string cultureInfo)
     {
-        var request = RequestRegisterExpenseJsonBuilder.Build();
+        var request = RequestExpenseJsonBuilder.Build();
         request.Title = string.Empty;
 
         var result = await DoPost(_method, request, _token, cultureInfo);
