@@ -14,7 +14,10 @@ public class ExpensesRepositoryBuilder
             mock.Setup(repository => repository.GetAll(user)).ReturnsAsync(expenses);
 
         if (user != null && expense != null)
+        {
             mock.Setup(repository => repository.GetById(expense.Id, user)).ReturnsAsync(expense);
+            mock.Setup(repository => repository.GetExpenseById(expense.Id, user)).ReturnsAsync(expense);
+        }
 
         return mock.Object;
     }
