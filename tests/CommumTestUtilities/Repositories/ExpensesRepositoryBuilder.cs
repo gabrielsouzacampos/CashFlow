@@ -11,7 +11,10 @@ public class ExpensesRepositoryBuilder
         var mock = new Mock<IExpensesRepository>();
 
         if (user != null && expenses != null)
+        {
             mock.Setup(repository => repository.GetAll(user)).ReturnsAsync(expenses);
+            mock.Setup(repository => repository.FilterByMonth(It.IsAny<DateOnly>(), user)).ReturnsAsync(expenses);
+        }
 
         if (user != null && expense != null)
         {

@@ -15,7 +15,7 @@ public class ReportController : ControllerBase
     [HttpGet("Excel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> GetExcel([FromHeader] DateOnly month, 
+    public async Task<IActionResult> GetExcel([FromQuery] DateOnly month, 
         [FromServices] IGenerateExpensesReportExcelUseCase useCase)
     {
         var file = await useCase.Execute(month);
@@ -29,7 +29,7 @@ public class ReportController : ControllerBase
     [HttpGet("Pdf")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> GetPdf([FromHeader] DateOnly month,
+    public async Task<IActionResult> GetPdf([FromQuery] DateOnly month,
         [FromServices] IGenerateExpensesReportPdfUseCase useCase)
     {
         byte[] file = await useCase.Execute(month);
