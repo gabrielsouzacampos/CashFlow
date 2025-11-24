@@ -20,4 +20,9 @@ internal class UsersRepository(CashFlowDbContext context) : IUsersRepository
             .FirstOrDefaultAsync(user => user.Email.Equals(email)); 
         return user;
     }
+
+    public async Task<User?> GetById(long id) 
+        => await _context.Users.FirstOrDefaultAsync(user => user.Id.Equals(id));
+
+    public void Update(User user) => context.Users.Update(user);
 }

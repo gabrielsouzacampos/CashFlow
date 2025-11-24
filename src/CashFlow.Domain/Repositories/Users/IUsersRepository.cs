@@ -8,6 +8,10 @@ public interface IUsersRepository
 
     Task<User?> GetUserByEmail(string email);
 
+    Task<User?> GetById(long id);
+
     Task Add(User user);
+
+    void Update(User user);
 }
 
