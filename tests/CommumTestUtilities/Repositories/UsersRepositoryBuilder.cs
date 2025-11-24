@@ -23,6 +23,13 @@ public class UsersRepositoryBuilder
         return this;
     }
 
+    public UsersRepositoryBuilder GetById(User user)
+    {
+        _repository.Setup(repository => repository.GetById(user.Id)).ReturnsAsync(user);
+        
+        return this;
+    }
+
     public IUsersRepository Build() => _repository.Object;
 }
 
