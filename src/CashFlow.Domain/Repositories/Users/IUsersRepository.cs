@@ -13,5 +13,7 @@ public interface IUsersRepository
     Task Add(User user);
 
     void Update(User user);
+
+    void Delete(User user);
 }
 

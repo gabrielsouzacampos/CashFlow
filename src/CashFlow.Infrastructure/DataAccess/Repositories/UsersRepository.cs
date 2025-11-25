@@ -24,5 +24,12 @@ internal class UsersRepository(CashFlowDbContext context) : IUsersRepository
     public async Task<User?> GetById(long id) 
         => await _context.Users.FirstOrDefaultAsync(user => user.Id.Equals(id));
 
-    public void Update(User user) => context.Users.Update(user);
+    public void Update(User user) => _context.Users.Update(user);
+
+    public async void Delete(User user)
+    {
+        var userToDelete = await _context.Users.FindAsync(user.Id);
+
+        _context.Users.Remove(userToDelete!);
+    }
 }
