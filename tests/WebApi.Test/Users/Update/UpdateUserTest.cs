@@ -45,9 +45,5 @@ public class UpdateUserTest : CashFlowClassFixture
             () => errors.ShouldHaveSingleItem(),
             () => errors.ShouldContain(error => error.GetString()!.Equals(expectedMessage))
         );
-
-
     }
-
 }
-

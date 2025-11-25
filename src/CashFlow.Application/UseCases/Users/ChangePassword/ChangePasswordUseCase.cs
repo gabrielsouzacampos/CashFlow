@@ -36,18 +36,15 @@ public class ChangePasswordUseCase(
     {
         var validator = new ChangePasswordValidator();
         var result = validator.Validate(request);
-
         var passwordHash = _passwordEncripter.Verify(request.Password, loggedUser.Password);
-
-        if (!passwordHash)
-            result.Errors.Add(new ValidationFailure(
-                string.Empty, ResourceErrorMessages.PASSWORD_DIFFERENT_CURRENT_PASSWORD)
-            );
 
         if (!result.IsValid)
         {
             var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
             throw new ErrorOnValidationException(errors);
         }
+
+        if (!passwordHash)
+            throw new ErrorOnValidationException(new List<string> { ResourceErrorMessages.PASSWORD_DIFFERENT_CURRENT_PASSWORD });
     }
 }

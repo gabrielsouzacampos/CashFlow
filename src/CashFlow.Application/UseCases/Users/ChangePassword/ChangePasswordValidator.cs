@@ -1,5 +1,6 @@
-﻿using CashFlow.Communication.Requests;
-using FluentValidation;
+﻿using FluentValidation;
+using CashFlow.Communication.Requests;
+using CashFlow.Exception;
 
 namespace CashFlow.Application.UseCases.Users.ChangePassword;
 
@@ -7,7 +8,6 @@ public class ChangePasswordValidator : AbstractValidator<RequestChangePasswordJs
 {
     public ChangePasswordValidator()
     {
-        RuleFor(x => x.Password)
-            .SetValidator(new PasswordValidator<RequestChangePasswordJson>());
+        RuleFor(x => x.NewPassword).SetValidator(new PasswordValidator<RequestChangePasswordJson>());
     }
 }
