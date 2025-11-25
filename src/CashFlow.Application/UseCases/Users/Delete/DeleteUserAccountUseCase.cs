@@ -14,7 +14,7 @@ public class DeleteUserAccountUseCase(ILoggedUser loggedUser, IUnitOfWork unitOf
     {
         var user = await _loggedUser.Get();
      
-        await _repository.Delete(user);
+        _repository.Delete(user);
      
         await _unitOfWork.Commit();
     }
