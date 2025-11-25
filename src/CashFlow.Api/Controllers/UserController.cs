@@ -1,4 +1,5 @@
-﻿using CashFlow.Application.UseCases.Users.Profile;
+﻿using CashFlow.Application.UseCases.Users.ChangePassword;
+using CashFlow.Application.UseCases.Users.Profile;
 using CashFlow.Application.UseCases.Users.Register;
 using CashFlow.Application.UseCases.Users.Update;
 using CashFlow.Communication.Requests;
@@ -35,9 +36,20 @@ public class UserController : ControllerBase
 
     [HttpPut]
     [Authorize]
-    [ProducesResponseType(typeof(ResponseUserProfileJson), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateProfile([FromBody] RequestUpdateUserJson request, [FromServices] IUpdateUserUseCase useCase)
+    {
+        await useCase.Execute(request);
+
+        return NoContent();
+    }
+
+    [HttpPut("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ChangePassword([FromBody] RequestChangePasswordJson request, [FromServices] IChangePasswordUseCase useCase)
     {
         await useCase.Execute(request);
 
