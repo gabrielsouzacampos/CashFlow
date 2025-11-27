@@ -22,6 +22,13 @@ public class AutoMapping : Profile
         CreateMap<RequestExpenseJson, Expense>()
             .ForMember(dest => dest.Date,
                 config => config.MapFrom(source => DateTime.SpecifyKind(source.Date, DateTimeKind.Utc))
+            )
+            .ForMember(dest => dest.Tags, 
+                config => config.MapFrom(source => source.Tags.Distinct())
+            );
+        CreateMap<Communication.Enums.Tag, Tag>()
+            .ForMember(dest => dest.Value,
+                config => config.MapFrom(source => source)
             );
     }
 

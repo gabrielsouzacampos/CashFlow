@@ -13,5 +13,7 @@ public class RequestExpenseJson
     public decimal Amount { get; set; }
 
     public PaymentType Type { get; set; }
+
+    public IList<Tag> Tags { get; set; } = [];
 }
 
