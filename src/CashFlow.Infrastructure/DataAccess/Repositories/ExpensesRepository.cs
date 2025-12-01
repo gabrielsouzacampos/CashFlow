@@ -11,7 +11,7 @@ internal class ExpensesRepository(CashFlowDbContext context) : IExpensesReposito
 
     public async Task<List<Expense>> GetAll(User user)
     {
-        return await _context.Expenses.AsNoTracking()
+        return await _context.Expenses.Include(expense => expense.Tags).AsNoTracking()
             .Where(expense => expense.UserId.Equals(user.Id)).ToListAsync();
     }
 
@@ -22,13 +22,13 @@ internal class ExpensesRepository(CashFlowDbContext context) : IExpensesReposito
 
     public async Task<Expense?> GetById(long id, User user)
     {
-        return await _context.Expenses.AsNoTracking()
+        return await _context.Expenses.Include(expense => expense.Tags).AsNoTracking()
             .FirstOrDefaultAsync(expense => expense.Id.Equals(id) && expense.UserId.Equals(user.Id));
     }
 
     public async Task<Expense?> GetExpenseById(long id, User user)
     {
-        return await _context.Expenses
+        return await _context.Expenses.Include(expense => expense.Tags)
             .FirstOrDefaultAsync(expense => expense.Id.Equals(id) && expense.UserId.Equals(user.Id));
     }
 

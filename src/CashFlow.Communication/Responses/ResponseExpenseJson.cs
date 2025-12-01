@@ -15,5 +15,7 @@ public class ResponseExpenseJson
     public decimal Amount { get; set; }
 
     public PaymentType PaymentType { get; set; }
+
+    public IList<Tag> Tags { get; set; } = [];
 }
 
