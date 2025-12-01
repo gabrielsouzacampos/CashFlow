@@ -29,12 +29,18 @@ public class ExpenseBuilder
     {
         return new Faker<Expense>()
             .RuleFor(u => u.Id, _ => 1)
-            .RuleFor(u => u.Title, faker => faker.Commerce.ProductName()) 
+            .RuleFor(u => u.Title, faker => faker.Commerce.ProductName())
             .RuleFor(u => u.Description, faker => faker.Commerce.ProductDescription())
             .RuleFor(u => u.Date, faker => faker.Date.Past())
             .RuleFor(u => u.Amount, faker => faker.Random.Decimal(min: 1, max: 1000))
             .RuleFor(u => u.PaymentType, faker => faker.PickRandom<PaymentType>())
-            .RuleFor(u => u.UserId, _ => user.Id); 
+            .RuleFor(u => u.UserId, _ => user.Id)
+            .RuleFor(u => u.Tags, faker => faker.Make(1, () => new CashFlow.Domain.Entities.Tag
+            {
+                Id = 1,
+                ExpenseId = 1,
+                Value = faker.PickRandom<CashFlow.Domain.Enums.Tag>(),
+            }));
     }
 }
 

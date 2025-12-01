@@ -6,7 +6,7 @@ using Shouldly;
 
 namespace Validators.Test.Expenses;
 
-public class RegisterExpenseValidatorTests
+public class ExpenseValidatorTests
 {
     [Fact]
     public void Success()
@@ -66,6 +66,22 @@ public class RegisterExpenseValidatorTests
         result.Errors.ShouldSatisfyAllConditions(
             x => x.ShouldHaveSingleItem(),
             x => x.ShouldContain(e => e.ErrorMessage.Equals(ResourceErrorMessages.PAYMENT_TYPE_INVALID))
+            );
+    }
+
+    [Fact]
+    public void ErrorTagInvalid()
+    {
+        var validator = new ExpenseValidator();
+        var request = RequestExpenseJsonBuilder.Build();
+        request.Tags.Add((Tag)1000);
+
+        var result = validator.Validate(request);
+
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldSatisfyAllConditions(
+            x => x.ShouldHaveSingleItem(),
+            x => x.ShouldContain(e => e.ErrorMessage.Equals(ResourceErrorMessages.TAG_TYPE_NOT_SUPPORTED))
             );
     }
 
