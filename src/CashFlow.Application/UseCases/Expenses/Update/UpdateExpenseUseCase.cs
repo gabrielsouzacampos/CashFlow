@@ -23,6 +23,8 @@ public class UpdateExpenseUseCase(IExpensesRepository repository, IUnitOfWork un
         var expense = await _repository.GetExpenseById(id, loggedUser) 
             ?? throw new NotFoundException(ResourceErrorMessages.EXPENSE_NOT_FOUND);
 
+        expense.Tags.Clear();
+
         _mapper.Map(request, expense);
 
         _repository.Update(expense);
